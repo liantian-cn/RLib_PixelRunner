@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(levelname)s -
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.WARNING)  # 添加这一行
 
-TARGET_FPS = 8
+TARGET_FPS = 15
 REGION = (0, 0, 324, 24)
 
 WM_KEYDOWN = 0x0100
