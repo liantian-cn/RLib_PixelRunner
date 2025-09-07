@@ -17,3 +17,5 @@ uv run .\deploy.py
 ```
 
 编译结束后，在`build\main.dist`目录下运行main.exe
+
+先启动游戏，再执行
