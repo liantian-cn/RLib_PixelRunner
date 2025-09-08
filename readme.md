@@ -14,10 +14,10 @@ uv python install 3.11.13
 
 uv sync
 
-uv run .\deploy.py
+uv run .\main.py
 
 ```
 
-编译结束后，在`build\main.dist`目录下运行main.exe
+<!-- 编译结束后，在`build\main.dist`目录下运行main.exe
 
-先启动游戏，再执行
+先启动游戏，再执行 -->
