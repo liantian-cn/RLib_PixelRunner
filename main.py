@@ -6,7 +6,8 @@ from typing import List, Any, Optional, Dict
 import dxcam
 import numpy as np
 from win32gui import EnumWindows, GetWindowText
-import easyocr
+import ddddocr
+from PIL import Image
 
 # 设置默认日志级别为WARNING
 logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -439,16 +440,7 @@ class Keyboard:
 def initialize_components():
     """初始化OCR、摄像头和键盘组件"""
     logger.info("正在初始化组件...")
-    # ocr = CnOcr(det_model_name='naive_det')
-    # ocr = CnOcr(det_model_name='naive_det')
-    # ocr = CnOcr(det_model_name='en_PP-OCRv3_det', rec_model_name='en_PP-OCRv3')
-    # ocr = PaddleOCR(
-    #     text_detection_model_name="PP-OCRv5_mobile_det",
-    #     text_recognition_model_name="PP-OCRv5_mobile_rec",
-    #     use_doc_orientation_classify=False,
-    #     use_doc_unwarping=False,
-    #     use_textline_orientation=False)  # 更换 PP-OCRv5_mobile 模型
-    ocr = easyocr.Reader(['en',])
+    ocr = ddddocr.DdddOcr()
     camera = dxcam.create(region=REGION)
     camera.start(target_fps=TARGET_FPS)
     keyboard = Keyboard()
@@ -487,14 +479,19 @@ def process_ocr_mode(ocr, right_part, keyboard):
     """处理OCR模式"""
     logger.debug("进入OCR模式")
     ocr_error = False
-    result = ocr.recognize(right_part, detail=0, paragraph=True)
-    ocr_text = result[0]
-    ocr_text=ocr_text.strip()
-    ocr_text=ocr_text.upper()
-    if "ERROR" in ocr_text:
-        logger.warning("OCR识别错误")
-        return
+    # result = ocr.recognize(right_part, detail=0, paragraph=True)
+    # ocr_text = result[0]
+    # ocr_text=ocr_text.strip()
+    # ocr_text=ocr_text.upper()
+    # if "ERROR" in ocr_text:
+    #     logger.warning("OCR识别错误")
+    #     return
     # 标准化OCR识别结果
+    img = Image.fromarray(right_part)
+    ocr_text = ocr.classification(img)
+    # print(result)
+    #
+    # exit(1)
     normalized_text = normalize_hotkey(ocr_text)
     keys = normalized_text.split("-")
     for key in keys:
@@ -545,9 +542,9 @@ def process_frame(frame, ocr, keyboard):
 
 def main() -> None:
 
-    if not is_admin():
-        print("必须用管理员身份运行脚本")
-        exit(32)
+    # if not is_admin():
+    #     print("必须用管理员身份运行脚本")
+    #     exit(32)
 
     # 初始化组件
     ocr, camera, keyboard = initialize_components()
