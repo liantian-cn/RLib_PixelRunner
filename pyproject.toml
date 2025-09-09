@@ -6,7 +6,6 @@ requires-python = ">=3.11"
 dependencies = [
     "ddddocr>=1.5.6",
     "dxcam>=0.0.5",
-    "nuitka>=2.7.13",
     "pywin32>=311",
 ]
 
