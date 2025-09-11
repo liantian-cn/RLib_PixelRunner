@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(levelname)s -
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.WARNING)  # 添加这一行
 
-TARGET_FPS = 15
+TARGET_FPS = 30
 REGION = (0, 0, 324, 24)
 
 WM_KEYDOWN = 0x0100
@@ -542,9 +542,9 @@ def process_frame(frame, ocr, keyboard):
 
 def main() -> None:
 
-    # if not is_admin():
-    #     print("必须用管理员身份运行脚本")
-    #     exit(32)
+    if not is_admin():
+        print("必须用管理员身份运行脚本")
+        exit(32)
 
     # 初始化组件
     ocr, camera, keyboard = initialize_components()

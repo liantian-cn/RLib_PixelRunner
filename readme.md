@@ -18,6 +18,14 @@ uv run .\main.py
 
 ```
 
-<!-- 编译结束后，在`build\main.dist`目录下运行main.exe
 
-先启动游戏，再执行 -->
+## 编译
+
+```
+
+uv run .\deploy.py
+
+
+```
+
+然后创建`build\main.dist\ddddocr`目录，将`common_old.onnx`、`common_det.onnx`、`common.onnx`复制到该目录内

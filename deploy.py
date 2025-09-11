@@ -7,14 +7,14 @@ now = datetime.now()
 args = [
     'nuitka',
     '--standalone',
-    '--show-memory',
-    '--show-progress',
+    # '--show-memory',
+    # '--show-progress',
     '--assume-yes-for-downloads',
     '--windows-uac-admin',
     '--mingw64',
     '--windows-icon-from-ico=./python.ico',
     '--windows-console-mode=force',
-    '--show-progress',
+    # '--show-progress',
     '--output-dir=build',
     'main.py'
 ]
