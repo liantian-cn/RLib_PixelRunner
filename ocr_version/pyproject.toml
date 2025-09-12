@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Add your description here"
 requires-python = ">=3.11"
 dependencies = [
+    "ddddocr>=1.5.6",
     "dxcam>=0.0.5",
     "nuitka>=2.7.14",
     "pywin32>=311",

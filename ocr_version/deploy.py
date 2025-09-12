@@ -6,10 +6,9 @@ now = datetime.now()
 
 args = [
     'nuitka',
-    # '--standalone',
-    '--onefile',
-    '--show-memory',
-    '--show-progress',
+    '--standalone',
+    # '--show-memory',
+    # '--show-progress',
     '--assume-yes-for-downloads',
     '--windows-uac-admin',
     '--mingw64',

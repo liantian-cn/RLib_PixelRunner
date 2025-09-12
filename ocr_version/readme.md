@@ -28,6 +28,4 @@ uv run .\deploy.py
 
 ```
 
-## 注意
-
-搭配[RLib_AssistedCombat](https://github.com/liantian-cn/RLib_AssistedCombat)则完全不需要ocr，旧版本在ocr_version目录
+然后创建`build\main.dist\ddddocr`目录，将`common_old.onnx`、`common_det.onnx`、`common.onnx`复制到该目录内

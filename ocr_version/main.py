@@ -6,14 +6,15 @@ from typing import List, Any, Optional, Dict
 import dxcam
 import numpy as np
 from win32gui import EnumWindows, GetWindowText
-
+import ddddocr
+from PIL import Image
 
 # 设置默认日志级别为WARNING
 logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.WARNING)  # 添加这一行
 
-TARGET_FPS = 15
+TARGET_FPS = 30
 REGION = (0, 0, 324, 24)
 
 WM_KEYDOWN = 0x0100
@@ -439,12 +440,13 @@ class Keyboard:
 def initialize_components():
     """初始化OCR、摄像头和键盘组件"""
     logger.info("正在初始化组件...")
+    ocr = ddddocr.DdddOcr()
     camera = dxcam.create(region=REGION)
     camera.start(target_fps=TARGET_FPS)
     keyboard = Keyboard()
     keyboard.find_window("魔兽世界")
     logger.info("组件初始化完成")
-    return camera, keyboard
+    return ocr, camera, keyboard
 
 
 def normalize_hotkey(text):
@@ -473,6 +475,36 @@ def normalize_hotkey(text):
     return text
 
 
+def process_ocr_mode(ocr, right_part, keyboard):
+    """处理OCR模式"""
+    logger.debug("进入OCR模式")
+    ocr_error = False
+    # result = ocr.recognize(right_part, detail=0, paragraph=True)
+    # ocr_text = result[0]
+    # ocr_text=ocr_text.strip()
+    # ocr_text=ocr_text.upper()
+    # if "ERROR" in ocr_text:
+    #     logger.warning("OCR识别错误")
+    #     return
+    # 标准化OCR识别结果
+    img = Image.fromarray(right_part)
+    ocr_text = ocr.classification(img)
+    # print(result)
+    #
+    # exit(1)
+    normalized_text = normalize_hotkey(ocr_text)
+    keys = normalized_text.split("-")
+    for key in keys:
+        x = VK_DICT.get(key, None)
+        if x is None:
+            logger.warning(f"无效的按键: {normalized_text}")
+            ocr_error = True
+    if not ocr_error:
+        logger.debug(f"发送OCR识别的按键组合: {normalized_text}")
+        keyboard.send_hot_key(normalized_text)
+    else:
+        logger.warning("OCR识别失败")
+
 
 def process_color_mode(code, keyboard):
     """处理颜色模式"""
@@ -486,14 +518,17 @@ def process_color_mode(code, keyboard):
         logger.warning(f"无效的颜色: {code}")
 
 
-def process_frame(frame, keyboard):
+def process_frame(frame, ocr, keyboard):
     """处理单个帧"""
     left_part = frame[:, :24, :]
+    right_part = frame[:, 24:, :]
 
     if np.all(left_part == left_part[0, 0]):
         logger.debug("检测到纯色背景")
         code = left_part[0, 0]
-        if code[0] == 255 and code[1] == 255 and code[2] == 255:
+        if code[0] == 128 and code[1] == 128 and code[2] == 128:
+            process_ocr_mode(ocr, right_part, keyboard)
+        elif code[0] == 255 and code[1] == 255 and code[2] == 255:
             logger.debug("纯白闲置")
         elif code[0] == 0 and code[1] == 0 and code[2] == 0:
             logger.debug("纯黑闲置")
@@ -512,12 +547,12 @@ def main() -> None:
         exit(32)
 
     # 初始化组件
-    camera, keyboard = initialize_components()
+    ocr, camera, keyboard = initialize_components()
 
     try:
         while True:
             frame = camera.get_latest_frame()
-            process_frame(frame, keyboard)
+            process_frame(frame, ocr, keyboard)
     except KeyboardInterrupt:
         logger.info("程序被用户中断")
     finally:
